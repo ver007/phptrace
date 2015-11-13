@@ -1,83 +1,63 @@
-phptrace
-==============================
+phptrace是一个低开销的用于跟踪、分析PHP运行情况的工具。
 
-> Readme in [Chinese 中文](https://github.com/Qihoo360/phptrace/blob/master/README_ZH.md)
+它可以跟踪PHP在运行时的函数调用、请求信息、执行流程，并且提供有过滤器、统计信息 、当前状态等实用功能。
 
-[![Build Status](https://travis-ci.org/Qihoo360/phptrace.svg)](https://travis-ci.org/Qihoo360/phptrace)
+在任何环境下，它都能很好的定位阻塞问题以及在高负载下Debug，尤其是线上产品环境。
 
-phptrace is a low-overhead tracing tool for PHP.
+它具有以下特性：
 
-It can trace all PHP executing, function calls, request information during
-run-time. And provides features like Filter, Statistics, Current Status and so
-on.
+    低开销，在只加载模块不开启Trace功能时对性能影响极低
+    稳定性，已经稳定运行在Qihoo 360线上服务中，并针对主流框架进行测试
 
-It is very useful to locate blocking, heavy-load problems and debug in all
-environments, especially in production environments.
+介绍及使用Wiki
 
-Features:
-* low-overhead, when extension loaded and trace is off
-* stable, running on [Qihoo 360](http://www.360safe.com/) and tested on main-stream frameworks
+最新版本下载： https://pecl.php.net/package/trace
+编译安装
 
-Download the latest version: https://pecl.php.net/package/trace
+    解压缩源码包
 
-
-Building
-------------------------------
-
-1. Extracting tarball
-    ```
     tar -zxf phptrace-{version}.tar.gz
     cd phptrace-{version}
-    ```
 
-2. PHP extension - Compile
-    ```
+    PHP扩展 - 编译安装
+
     cd extension
     {php_bin_dir}/phpize
     ./configure --with-php-config={php_bin_dir}/php-config
+    # 编译
     make
+    # 安装trace.so到扩展目录
     make install
-    ```
 
-3. PHP extension - Add extension load directive
+    PHP扩展 - 配置
 
-    Edit `php.ini`, add the following line. A reload is needed if PHP running
-    by php-fpm.
+    编辑配置文件php.ini，增加下面配置信息。如果需要的话重启PHP进程。
 
-    ```
     extension=trace.so
-    ```
 
-4. Command tool - Compile
-    ```
+    命令行工具编译
+
     cd cmdtool
     make
-    ```
 
-5. Verify
-    ```
+    验证安装情况
+
     php -r 'for ($i = 0; $i < 100; $i++) usleep(10000);' &
     ./phptrace -p $!
-    ```
 
-    You should see something below if everything fine
+    如果一切正常，应该可以看到类似下面的输出
 
-    ```
     1431681727.341829      usleep  =>  NULL   wt: 0.011979 ct: 0.011980
     1431681727.341847      usleep(10000) at [Command line code:1]
     1431681727.353831      usleep  =>  NULL   wt: 0.011984 ct: 0.011983
     1431681727.353849      usleep(10000) at [Command line code:1]
     1431681727.365829      usleep  =>  NULL   wt: 0.011980 ct: 0.011981
     1431681727.365848      usleep(10000) at [Command line code:1]
-    ```
 
+使用
 
-Usage
-------------------------------
+    跟踪执行状态
 
-* Trace executing
-
-    ```
     $ ./phptrace -p 3600
     1431682433.534909      run() at [sample.php:15]
     1431682433.534944        say("hello world") at [sample.php:7]
@@ -87,11 +67,9 @@ Usage
     1431682434.538953          printf  =>  11   wt: 0.000054 ct: 0.000000
     1431682434.538959        say  =>  NULL   wt: 1.004015 ct: 0.000000
     1431682434.538966      run  =>  NULL   wt: 1.004057 ct: 0.000000
-    ```
 
-* Print current status
+    打印当前状态
 
-    ```
     $ ./phptrace -s -p 3600
     Memory
     usage: 235320
@@ -107,42 +85,12 @@ Usage
     #1    printf("hello world") at [sample.php:8]
     #2    say("hello world") at [sample.php:3]
     #3    run() at [sample.php:12]
-    ```
 
+联系方式
 
-Comparison
-------------------------------
+    邮箱: g-infra-webcore@list.qihoo.net
+    QQ群: 428631461
 
-### phptrace
-* It can print call stack of executing php process, which is similar to pstack.
-* It can trace php function calls, which is similar to strace.
-* It cannot get performance summary of php scripts, which will be supported in the future.
-* It can not debug php scripts.
+许可
 
-### Phpdbg
-* It is used to debug php program, which is similar to gdb.
-* It cannot print call stack of executing php process.
-* It cannot trace php function calls.
-
-### Xhprof
-* It is used to get performance summary, which is similar to gprof.
-* It cannot print call stack of executing php process.
-* It cannot trace php function calls.
-
-### Xdebug
-* It can print call stack only if some error occurs.
-* It would hook many opcode handlers even you did not set the auto_trace flag in php.ini; it traces all the processes at the same time just without output. This is a big overhea
-d in production envirenment.
-* It can not be enabled to trace without modifying the ini or the php script.
-
-
-Contact
-------------------------------
-
-* Email: g-infra-webcore@list.qihoo.net
-
-
-License
-------------------------------
-
-This project is released under the [Apache 2.0 License](https://raw.githubusercontent.com/Qihoo360/phptrace/master/LICENSE).
+本项目遵循Apache 2.0 许可进行发布
