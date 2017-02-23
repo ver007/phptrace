@@ -31,7 +31,14 @@ phptrace是一个低开销的用于跟踪、分析PHP运行情况的工具。
 2. PHP扩展 - 编译安装
     ```
     cd extension
-    {php_bin_dir}/phpize
+    
+    {php_bin_dir}/phpize 
+    # 可能执行会出现 
+    # Can't find PHP headers in /usr/include/php
+    # The php-devel package is required for use of this command.
+    # 解决办法：
+    # yum install php-devel
+   
     ./configure --with-php-config={php_bin_dir}/php-config
     # 编译
     make
